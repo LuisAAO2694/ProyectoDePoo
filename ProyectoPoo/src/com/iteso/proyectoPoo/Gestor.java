@@ -75,3 +75,4 @@ public class Gestor extends JFrame
         SwingUtilities.invokeLater(() -> new Gestor().setVisible(true));
     }
 }
+// Hola mi nombre es ?
