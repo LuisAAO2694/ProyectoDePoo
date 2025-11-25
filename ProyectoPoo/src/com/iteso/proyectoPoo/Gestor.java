@@ -1,78 +1,45 @@
 package com.iteso.proyectoPoo;
 
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 
-public class Gestor extends JFrame
-{
-    private JTable tabla;
+/**
+ * Clase de lógica del sistema escolar.
+ * Se encarga de manejar los registros de alumnos en la tabla.
+ */
+public class Gestor {
+
     private DefaultTableModel modeloTabla;
 
-    // Campos editables
-    private JTextField txtExpediente, txtNombre;
-    private JComboBox<String> cbSemestre, cbMateria, cbTipo;
-    private JSpinner spPeriodo, spValor;
-    private JButton btnGuardar, btnActualizar, btnEliminar;
-
-    public Gestor() {
-        setTitle("Gestor Escolar");
-        setSize(1000, 500);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        // ===== Tabla de solo lectura =====
-        String[] columnas = {"Expediente", "Nombre", "Semestre", "Periodo", "Materia", "Tipo", "Valor"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // tabla solo lectura
-            }
-        };
-        tabla = new JTable(modeloTabla);
-        JScrollPane scrollTabla = new JScrollPane(tabla);
-
-        // ===== Panel de edición =====
-        JPanel panelEdicion = new JPanel(new GridLayout(2, 7, 5, 5));
-        txtExpediente = new JTextField();
-        txtNombre = new JTextField();
-        cbSemestre = new JComboBox<>(new String[]{"Enero–Mayo", "Agosto–Diciembre"});
-        spPeriodo = new JSpinner(new SpinnerNumberModel(2025, 2000, 2100, 1));
-        cbMateria = new JComboBox<>(new String[]{"Programación", "Matemáticas", "Bases de Datos"});
-        cbTipo = new JComboBox<>(new String[]{"EXAMEN", "TAREA", "PROYECTO", "FINAL"});
-        spValor = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.5));
-
-        btnGuardar = new JButton("Guardar");
-        btnActualizar = new JButton("Actualizar");
-        btnEliminar = new JButton("Eliminar");
-
-        panelEdicion.add(txtExpediente);
-        panelEdicion.add(txtNombre);
-        panelEdicion.add(cbSemestre);
-        panelEdicion.add(spPeriodo);
-        panelEdicion.add(cbMateria);
-        panelEdicion.add(cbTipo);
-        panelEdicion.add(spValor);
-        panelEdicion.add(btnGuardar);
-        panelEdicion.add(btnActualizar);
-        panelEdicion.add(btnEliminar);
-
-        // ===== Layout principal =====
-        setLayout(new BorderLayout());
-        add(scrollTabla, BorderLayout.CENTER);
-        add(panelEdicion, BorderLayout.SOUTH);
-
-        agregarDatosEjemplo();
+    // Constructor que recibe el modelo de la tabla desde la interfaz
+    public Gestor(DefaultTableModel modeloTabla) {
+        this.modeloTabla = modeloTabla;
     }
 
-    private void agregarDatosEjemplo() {
-        modeloTabla.addRow(new Object[]{"A001", "Luis Arriaga", "Enero–Mayo", 2025, "Programación", "EXAMEN", 95.0});
-        modeloTabla.addRow(new Object[]{"A001", "Luis Arriaga", "Enero–Mayo", 2025, "Matemáticas", "TAREA", 88.5});
-        modeloTabla.addRow(new Object[]{"A002", "Ana Torres", "Agosto–Diciembre", 2025, "Bases de Datos", "FINAL", 78.0});
+    // Agrega un nuevo registro a la tabla
+    public void agregarRegistro(String expediente, String nombre, String semestre,
+                                int periodo, String materia, String tipo, double valor) {
+        modeloTabla.addRow(new Object[]{expediente, nombre, semestre, periodo, materia, tipo, valor});
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Gestor().setVisible(true));
+    // Elimina un registro seleccionado
+    public void eliminarRegistro(int fila) {
+        if (fila >= 0) {
+            modeloTabla.removeRow(fila);
+        }
+    }
+
+    // Actualiza un registro existente
+    public void actualizarRegistro(int fila, String expediente, String nombre, String semestre,
+                                   int periodo, String materia, String tipo, double valor) {
+        if (fila >= 0) {
+            modeloTabla.setValueAt(expediente, fila, 0);
+            modeloTabla.setValueAt(nombre, fila, 1);
+            modeloTabla.setValueAt(semestre, fila, 2);
+            modeloTabla.setValueAt(periodo, fila, 3);
+            modeloTabla.setValueAt(materia, fila, 4);
+            modeloTabla.setValueAt(tipo, fila, 5);
+            modeloTabla.setValueAt(valor, fila, 6);
+        }
     }
 }
 // Hola mi nombre es ?
