@@ -8,29 +8,59 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class SemestreCRUDDialog extends JDialog {
+/*
+ * Diálogo para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) de Semestres.
+ * Esta clase extiende JDialog para crear una ventana modal de administración de semestres.
+ * Permite gestionar los períodos académicos del sistema educativo.
+ */
+public class SemestreCRUDDialog extends JDialog
+{
     private SemestreDAO dao = new SemestreDAO();
     private DefaultTableModel model;
     private GestorUI parent;
 
-    public SemestreCRUDDialog(GestorUI parent) {
+    /**
+     * Constructor del diálogo CRUD de semestres.
+     *
+     * @param parent Ventana principal que crea este diálogo
+     */
+    public SemestreCRUDDialog(GestorUI parent)
+    {
         super(parent, "CRUD - Semestres", true);
         this.parent = parent;
         setSize(500, 350);
         setLocationRelativeTo(parent);
 
+        // ================================================
+        // CONFIGURACIÓN DE LA TABLA
+        // ================================================
         model = new DefaultTableModel(new String[]{"ID", "Nombre", "Periodo"}, 0) {
+
+            /**
+             * Sobrescribe para hacer las celdas no editables directamente.
+             * La edición se hará mediante formularios separados.
+             *
+             * @param r Índice de fila
+             * @param c Índice de columna
+             * @return false para deshabilitar edición directa en celdas
+             */
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
 
         JTable table = new JTable(model);
         table.removeColumn(table.getColumnModel().getColumn(0));
 
+        // ================================================
+        // PANEL SUPERIOR CON BOTONES
+        // ================================================
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdd = new JButton("Agregar");
         JButton btnEdit = new JButton("Editar");
         JButton btnDel = new JButton("Eliminar");
 
+        // ================================================
+        // CONFIGURACIÓN DE EVENTOS DE BOTONES
+        // ================================================
         btnAdd.addActionListener(e -> abrirFormulario(null));
         btnEdit.addActionListener(e -> {
             int sel = table.getSelectedRow();
@@ -49,13 +79,23 @@ public class SemestreCRUDDialog extends JDialog {
         });
 
         top.add(btnAdd); top.add(btnEdit); top.add(btnDel);
+
+        // ================================================
+        // ORGANIZACIÓN DEL LAYOUT
+        // ================================================
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         recargar();
     }
 
-    private void abrirFormulario(Semestre s) {
+    /**
+     * Abre un formulario para agregar o editar un semestre.
+     *
+     * @param s Semestre a editar, o null para agregar uno nuevo
+     */
+    private void abrirFormulario(Semestre s)
+    {
         JTextField tfNombre = new JTextField(12);
         JTextField tfPeriodo = new JTextField(8);
         if (s != null) { tfNombre.setText(s.getNombre()); tfPeriodo.setText(s.getPeriodo()); }
@@ -76,7 +116,12 @@ public class SemestreCRUDDialog extends JDialog {
         }
     }
 
-    private void recargar() {
+    /**
+     * Recarga los datos de la tabla desde la base de datos.
+     * También notifica a la ventana principal para actualizar otras vistas.
+     */
+    private void recargar()
+    {
         model.setRowCount(0);
         List<Semestre> list = dao.obtenerTodos();
         for (Semestre s : list) model.addRow(new Object[]{s.getId(), s.getNombre(), s.getPeriodo()});

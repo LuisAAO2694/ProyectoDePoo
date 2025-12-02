@@ -15,19 +15,38 @@ import java.awt.*;
 import java.io.File;
 import java.util.List;
 
+/*
+ * Clase principal de la interfaz gráfica del sistema Gestor Escolar.
+ * Esta clase representa la ventana principal (dashboard) desde donde se accede
+ * a todas las funcionalidades del sistema.
+ */
 public class GestorUI extends JFrame
 {
+    // ===============================================================
+    // COMPONENTES DE LA INTERFAZ GRÁFICA
+    // ===============================================================
     private JTable tabla;
     private DefaultTableModel modelo;
     private JTextField tfFiltroExpediente;
     private JComboBox<Semestre> cbSemestreFiltro;
     private JComboBox<Materia> cbMateriaFiltro;
 
+    // ===============================================================
+    // OBJETOS DE ACCESO A DATOS (DAOs)
+    // ===============================================================
     private CalificacionExtendidaDAO calDAO = new CalificacionExtendidaDAO();
     private SemestreDAO semestreDAO = new SemestreDAO();
     private MateriaDAO materiaDAO = new MateriaDAO();
 
-    public GestorUI() {
+    /**
+     * Constructor principal de la ventana GestorUI.
+     * Configura toda la interfaz gráfica y componentes.
+     */
+    public GestorUI()
+    {
+        // ===============================================================
+        // CONFIGURACIÓN BÁSICA DE LA VENTANA
+        // ===============================================================
         setTitle("Gestor Escolar - Dashboard");
         setSize(1100, 650);
         setLocationRelativeTo(null);
@@ -151,9 +170,16 @@ public class GestorUI extends JFrame
         Integer idMat = cbMateriaFiltro.getSelectedIndex() <= 0 ?
                 null : ((Materia)cbMateriaFiltro.getSelectedItem()).getId();
 
+        // ===============================================================
+        // OBTENER DATOS CON FILTROS APLICADOS
+        // ===============================================================
         List<CalificacionExtendida> datos = calDAO.obtenerTodas(filtroExp, idSem, idMat);
 
-        for (CalificacionExtendida c : datos) {
+        // ===============================================================
+        // LLENAR TABLA CON DATOS OBTENIDOS
+        // ===============================================================
+        for (CalificacionExtendida c : datos)
+        {
             modelo.addRow(new Object[]{
                     c.getIdCalificacion(),
                     c.getExpediente(),
@@ -168,6 +194,11 @@ public class GestorUI extends JFrame
         }
     }
 
+
+    /**
+     * Método público para recargar datos.
+     * Usado por diálogos CRUD para notificar cambios.
+     */
     public void recargarDatos() { cargarTabla(); }
 
     public static void main(String[] args) {

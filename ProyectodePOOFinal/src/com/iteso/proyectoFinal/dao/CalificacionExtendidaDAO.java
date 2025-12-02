@@ -7,8 +7,21 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Realiza JOINs entre múltiples tablas para obtener información detallada.
+ * Implementa filtros dinámicos para búsquedas personalizadas.
+ */
 public class CalificacionExtendidaDAO
 {
+    /**
+     * Obtiene todas las calificaciones con información extendida (JOINs).
+     * Realiza búsquedas con filtros opcionales para refinar resultados.
+     *
+     * @param filtroExpediente   Filtro por expediente del alumno (puede contener texto parcial)
+     * @param filtroSemestreId   Filtro por ID del semestre
+     * @param filtroMateriaId    Filtro por ID de la materia
+     * @return Lista de objetos CalificacionExtendida con información detallada
+     */
     public List<CalificacionExtendida> obtenerTodas(String filtroExpediente, Integer filtroSemestreId, Integer filtroMateriaId) {
         List<CalificacionExtendida> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("""
@@ -28,7 +41,8 @@ public class CalificacionExtendidaDAO
                 WHERE 1=1
                 """);
 
-        if (filtroExpediente != null && !filtroExpediente.isBlank()) {
+        if (filtroExpediente != null && !filtroExpediente.isBlank())
+        {
             sql.append(" AND a.expediente LIKE ?");
         }
         if (filtroSemestreId != null) sql.append(" AND s.id_semestre = ?");
@@ -37,7 +51,8 @@ public class CalificacionExtendidaDAO
         sql.append(" ORDER BY a.expediente, m.nombre");
 
         try (Connection conn = conexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+             PreparedStatement ps = conn.prepareStatement(sql.toString()))
+        {
 
             int idx = 1;
             if (filtroExpediente != null && !filtroExpediente.isBlank()) {

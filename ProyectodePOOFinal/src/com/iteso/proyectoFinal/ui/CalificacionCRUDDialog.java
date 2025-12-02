@@ -14,7 +14,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class CalificacionCRUDDialog extends JDialog {
+/*
+ * Diálogo para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) de Calificaciones.
+ * Esta clase extiende JDialog para crear una ventana modal de administración de calificaciones.
+ */
+public class CalificacionCRUDDialog extends JDialog
+{
 
     private CalificacionDAO dao = new CalificacionDAO();
     private AlumnoDAO alumnoDAO = new AlumnoDAO();
@@ -24,23 +29,46 @@ public class CalificacionCRUDDialog extends JDialog {
     private DefaultTableModel model;
     private GestorUI parent;
 
-    public CalificacionCRUDDialog(GestorUI parent) {
+    /**
+     * Constructor del diálogo CRUD de calificaciones.
+     *
+     * @param parent Ventana principal que crea este diálogo
+     */
+    public CalificacionCRUDDialog(GestorUI parent)
+    {
         super(parent, "CRUD - Calificaciones", true);
         this.parent = parent;
         setSize(800, 450);
         setLocationRelativeTo(parent);
 
+        // ================================================
+        // CONFIGURACIÓN DE LA TABLA
+        // ================================================
         model = new DefaultTableModel(new String[]{"ID", "Expediente", "Alumno", "Materia", "Semestre", "Tipo", "Valor"}, 0) {
+
+            /**
+             * Sobrescribe para hacer las celdas no editables directamente.
+             *
+             * @param r Índice de fila
+             * @param c Índice de columna
+             * @return false para deshabilitar edición directa
+             */
             @Override public boolean isCellEditable(int r,int c){ return false; }
         };
         JTable table = new JTable(model);
         table.removeColumn(table.getColumnModel().getColumn(0));
 
+        // ================================================
+        // PANEL SUPERIOR CON BOTONES
+        // ================================================
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdd = new JButton("Agregar");
         JButton btnEdit = new JButton("Editar");
         JButton btnDel = new JButton("Eliminar");
 
+        // ================================================
+        // CONFIGURACIÓN DE EVENTOS DE BOTONES
+        // ================================================
         btnAdd.addActionListener(e -> abrirFormulario(null));
         btnEdit.addActionListener(e -> {
             int sel = table.getSelectedRow();
@@ -59,17 +87,30 @@ public class CalificacionCRUDDialog extends JDialog {
         });
 
         top.add(btnAdd); top.add(btnEdit); top.add(btnDel);
+
+        // ================================================
+        // ORGANIZACIÓN DEL LAYOUT
+        // ================================================
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         recargar();
     }
 
-    private void abrirFormulario(Calificacion c) {
+    /**
+     * Abre un formulario para agregar o editar una calificación.
+     *
+     * @param c Calificación a editar, o null para agregar una nueva
+     */
+    private void abrirFormulario(Calificacion c)
+    {
         List<Alumno> alumnos = alumnoDAO.obtenerTodos();
         List<Materia> materias = materiaDAO.obtenerTodos();
         List<Semestre> semestres = semestreDAO.obtenerTodos();
 
+        // ================================================
+        // CREACIÓN DE CONTROLES DEL FORMULARIO
+        // ================================================
         JComboBox<Alumno> cbAlumno = new JComboBox<>();
         for (Alumno a : alumnos) cbAlumno.addItem(a);
         JComboBox<Materia> cbMateria = new JComboBox<>();
@@ -87,6 +128,10 @@ public class CalificacionCRUDDialog extends JDialog {
             tfTipo.setText(c.getTipo()); tfValor.setText(String.valueOf(c.getValor()));
         }
 
+        // ================================================
+        // ORGANIZACIÓN DEL FORMULARIO
+        // ================================================
+
         JPanel p = new JPanel(new GridLayout(0,2,6,6));
         p.add(new JLabel("Alumno:")); p.add(cbAlumno);
         p.add(new JLabel("Materia:")); p.add(cbMateria);
@@ -94,6 +139,10 @@ public class CalificacionCRUDDialog extends JDialog {
         p.add(new JLabel("Tipo:")); p.add(tfTipo);
         p.add(new JLabel("Valor:")); p.add(tfValor);
 
+
+        // ================================================
+        // MOSTRAR DIÁLOGO Y PROCESAR RESULTADO
+        // ================================================
         int ok = JOptionPane.showConfirmDialog(this, p, c == null ? "Agregar Calificación" : "Editar Calificación", JOptionPane.OK_CANCEL_OPTION);
         if (ok == JOptionPane.OK_OPTION) {
             try {
@@ -117,6 +166,10 @@ public class CalificacionCRUDDialog extends JDialog {
         }
     }
 
+    /**
+     * Recarga los datos de la tabla.
+     * Utiliza CalificacionCRUDFiller para obtener datos extendidos del padre.
+     */
     private void recargar()
     {
         model.setRowCount(0);
